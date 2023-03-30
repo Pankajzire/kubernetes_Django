@@ -7,21 +7,79 @@
 
 * Connect to the instance
 
+      sudo apt-get update
+
+## Docker Installation
+
+* Install docker on ubuntu, we need docker to run Minikube
+
+*  Set up the repository
+
+        sudo apt-get install \
+        ca-certificates \
+        curl \
+        gnupg
+
+
+*       sudo mkdir -m 0755 -p /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+* Use the following command to set up the repository:
+
+       echo \
+       "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+       "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+* Install Docker Engine
+
+        sudo apt-get update
+
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+## Minikube Installation
+
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+
+      minikube start --driver=docker
+
+      sudo usermod -aG docker $USER && newgrp docker
+
+
+
+* To Interact with your cluster
+
+      sudo snap install kubectl
+      sudo snap install kubectl --classic
+      kubectl get po -A
+      minikube status
+      kubectl get node
+
+
+* To Start Minikube
+
+       minikube start
+
 
 * Clone to repo to get all the files in the system
 
-      git clone https://github.com/Pankajzire/kubernetes_Django.git
+      git clone https://github.com/Pankajzire/kubernetes_django.git
 
 
       cd kubernetes_Django
 
 * To build image
 
-      docker build -t pankajzire/kubernetes_Django_todo:latest .
+      docker build -t pankajzire/kubernetes_django_todo:latest .
 
 * To run the image in container
 
-      docker run -d -p 8000:8000 kubernetes_Django_todo:latest
+      docker run -d -p 8000:8000 pankajzire/kubernetes_django_todo
+
 
 * To check it is working or not
 
@@ -33,11 +91,16 @@
 
       cd k8s
 
-* To pust image to docker hub  
+* To push image to docker hub we need to login to docker hub
+
+      docker login 
+
+* Push the image
+
 
       docker images
 
-      docker push kubernetes_Django_todo:latest
+      docker push kubernetes_django_todo:latest
 
 * Create pod
      
@@ -57,9 +120,9 @@
 
          containers:
 
-             - name: Todo-App
+             - name: Todo-app
 
-               image: pankajzire/kubernetes_Django_todo:latest
+               image: pankajzire/kubernetes_django_todo:latest
 
                ports:
 
@@ -76,6 +139,18 @@
 * To see runnig pods
       
       kubectl get pods 
+
+* To get the IP
+      
+      kubectl get pods -O wide
+
+* login to minikube and curl the IP
+
+      minikube ssh
+
+      curl -L http://IP:8000
+
+      
 
 ## To do deployment, Replication, Auto-healing, Auto-scaling
 
@@ -119,7 +194,7 @@
 
                  - name: todo-app
 
-                   image: pankajzire/kubernetes_Django_todo:latest
+                   image: pankajzire/kubernetes_django_todo:latest
 
                    ports:
 
@@ -154,7 +229,7 @@
       spec:
          type: NodePort
          selector:
-             app: todo-App
+             app: todo-app
         ports:
             # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
              - port: 80
@@ -174,6 +249,10 @@
 * To get external IP
 
       minikube service todo-service --url 
+
+      or 
+
+      minikube ip
 
 * Run a curl command on the ip you get
 
