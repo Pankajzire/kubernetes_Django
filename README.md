@@ -84,6 +84,8 @@
 * To check it is working or not
 
       curl -L http://x.y.z.w:8000
+      
+## Deploy on Kubernnetes
 
 * To create kubernetes pod create a folder
 
